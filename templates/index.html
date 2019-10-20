@@ -44,7 +44,7 @@
         <div class="row align-items-center">
           
           <div class="col-6 col-xl-2">
-            <h1 class="mb-0 site-logo"><a href="index.html" class="text-black mb-0">Classy<span class="text-primary">Ads</span>  </a></h1>
+            <h1 class="mb-0 site-logo"><a href="#" class="text-black mb-0">SELL<span class="text-primary">X</span>  </a></h1>
           </div>
           <div class="col-12 col-md-10 d-none d-xl-block">
             <nav class="site-navigation position-relative text-right" role="navigation">
@@ -63,7 +63,9 @@
                 </li>
                 <li><a href="contact.html">Contact</a></li>
 
-                <li><a href="#" class="cta"><span class="bg-primary text-white rounded">+ Post an Ad</span></a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+
+                <li><a href="{{ url_for('new') }}" class="cta"><span class="bg-primary text-white rounded">+ Post an Ad</span></a></li>
               </ul>
             </nav>
           </div>
@@ -100,27 +102,6 @@
                   <div class="col-lg-12 mb-4 mb-xl-0 col-xl-4">
                     <input type="text" class="form-control rounded" placeholder="What are you looking for?">
                   </div>
-                  <div class="col-lg-12 mb-4 mb-xl-0 col-xl-3">
-                    <div class="wrap-icon">
-                      <span class="icon icon-room"></span>
-                      <input type="text" class="form-control rounded" placeholder="Location">
-                    </div>
-                    
-                  </div>
-                  <div class="col-lg-12 mb-4 mb-xl-0 col-xl-3">
-                    <div class="select-wrap">
-                      <span class="icon"><span class="icon-keyboard_arrow_down"></span></span>
-                      <select class="form-control rounded" name="" id="">
-                        <option value="">All Categories</option>
-                        <option value="">Real Estate</option>
-                        <option value="">Books &amp;  Magazines</option>
-                        <option value="">Furniture</option>
-                        <option value="">Electronics</option>
-                        <option value="">Cars &amp; Vehicles</option>
-                        <option value="">Others</option>
-                      </select>
-                    </div>
-                  </div>
                   <div class="col-lg-12 col-xl-2 ml-auto text-right">
                     <input type="submit" class="btn btn-primary btn-block rounded" value="Search">
                   </div>
@@ -141,44 +122,44 @@
           <div class="row align-items-stretch no-gutters">
             <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
               <a href="#" class="popular-category h-100">
-                <span class="icon"><span class="flaticon-house"></span></span>
-                <span class="caption mb-2 d-block">Real Estate</span>
-                <span class="number">3,921</span>
-              </a>
-            </div>
-            <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
-              <a href="#" class="popular-category h-100">
                 <span class="icon"><span class="flaticon-books"></span></span>
                 <span class="caption mb-2 d-block">Books &amp; Magazines</span>
-                <span class="number">398</span>
+                <span class="number">{{bcnt}}</span>
               </a>
             </div>
             <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
               <a href="#" class="popular-category h-100">
                 <span class="icon"><span class="flaticon-bunk-bed"></span></span>
                 <span class="caption mb-2 d-block">Furniture</span>
-                <span class="number">1,229</span>
+                <span class="number">{{fcnt}}</span>
               </a>
             </div>
             <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
               <a href="#" class="popular-category h-100">
                 <span class="icon"><span class="flaticon-innovation"></span></span>
                 <span class="caption mb-2 d-block">Electronics</span>
-                <span class="number">32,891</span>
+                <span class="number">{{elcnt}}</span>
               </a>
             </div>
             <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
               <a href="#" class="popular-category h-100">
                 <span class="icon"><span class="flaticon-car"></span></span>
                 <span class="caption mb-2 d-block">Cars &amp; Vehicles</span>
-                <span class="number">29,221</span>
+                <span class="number">{{carcnt}}</span>
               </a>
             </div>
+            <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
+                <a href="#" class="popular-category h-100">
+                  <span class="icon"><span class="flaticon-watch"></span></span>
+                  <span class="caption mb-2 d-block">Watches</span>
+                  <span class="number">{{wcnt}}</span>
+                </a>
+              </div>
             <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
               <a href="#" class="popular-category h-100">
                 <span class="icon"><span class="flaticon-pizza"></span></span>
                 <span class="caption mb-2 d-block">Other</span>
-                <span class="number">219</span>
+                <span class="number">{{ocnt}}</span>
               </a>
             </div>
           </div>
@@ -193,150 +174,17 @@
           <div class="col-12  block-13">
             <div class="owl-carousel nonloop-block-13">
               
+              {% for data in Post_data %}
               <div class="d-block d-md-flex listing vertical">
-                <a href="listings-single.html" class="img d-block" style="background-image: url('images/img_1.jpg')"></a>
+                <a href="{{ url_for('singlelist') }}" class="img d-block" style="background-image: {{ url_for(data.img) }}"></a>
                 <div class="lh-content">
-                  <span class="category">Cars &amp; Vehicles</span>
-                  <a href="#" class="bookmark"><span class="icon-heart"></span></a>
-                  <h3><a href="listings-single.html">Red Luxury Car</a></h3>
-                  <address>Don St, Brooklyn, New York</address>
-                  <p class="mb-0">
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-secondary"></span>
-                    <span class="review">(3 Reviews)</span>
-                  </p>
+                  <span class="category">{{data.tag}}</span>
+                  <!--<a href="#" class="bookmark"><span class="icon-heart"></span></a>-->
+                  <h3><a href="{{url_for('singlelist')}}">{{data.description}}</a></h3>
+                  <!--<address>Don St, Brooklyn, New York</address>-->
                 </div>
               </div>
-
-              <div class="d-block d-md-flex listing vertical">
-                <a href="listings-single.html" class="img d-block" style="background-image: url('images/img_2.jpg')"></a>
-                <div class="lh-content">
-                  <span class="category">Real Estate</span>
-                  <a href="#" class="bookmark"><span class="icon-heart"></span></a>
-                  <h3><a href="listings-single.html">House with Swimming Pool</a></h3>
-                  <address>Don St, Brooklyn, New York</address>
-                  <p class="mb-0">
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-secondary"></span>
-                    <span class="review">(3 Reviews)</span>
-                  </p>
-                </div>
-              </div>
-
-              <div class="d-block d-md-flex listing vertical">
-                <a href="listings-single.html" class="img d-block" style="background-image: url('images/img_3.jpg')"></a>
-                <div class="lh-content">
-                  <span class="category">Furniture</span>
-                  <a href="#" class="bookmark"><span class="icon-heart"></span></a>
-                  <h3><a href="listings-single.html">Wooden Chair &amp; Table</a></h3>
-                  <address>Don St, Brooklyn, New York</address>
-                  <p class="mb-0">
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-secondary"></span>
-                    <span class="review">(3 Reviews)</span>
-                  </p>
-                </div>
-              </div>
-
-              <div class="d-block d-md-flex listing vertical">
-                <a href="listings-single.html" class="img d-block" style="background-image: url('images/img_4.jpg')"></a>
-                <div class="lh-content">
-                  <span class="category">Electronics</span>
-                  <a href="#" class="bookmark"><span class="icon-heart"></span></a>
-                  <h3><a href="listings-single.html">iPhone X gray</a></h3>
-                  <address>Don St, Brooklyn, New York</address>
-                  <p class="mb-0">
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-secondary"></span>
-                    <span class="review">(3 Reviews)</span>
-                  </p>
-                </div>
-              </div>
-
-              <div class="d-block d-md-flex listing vertical">
-                <a href="listings-single.html" class="img d-block" style="background-image: url('images/img_1.jpg')"></a>
-                <div class="lh-content">
-                  <span class="category">Cars &amp; Vehicles</span>
-                  <a href="#" class="bookmark"><span class="icon-heart"></span></a>
-                  <h3><a href="listings-single.html">Red Luxury Car</a></h3>
-                  <address>Don St, Brooklyn, New York</address>
-                  <p class="mb-0">
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-secondary"></span>
-                    <span class="review">(3 Reviews)</span>
-                  </p>
-                </div>
-              </div>
-
-              <div class="d-block d-md-flex listing vertical">
-                <a href="listings-single.html" class="img d-block" style="background-image: url('images/img_2.jpg')"></a>
-                <div class="lh-content">
-                  <span class="category">Real Estate</span>
-                  <a href="#" class="bookmark"><span class="icon-heart"></span></a>
-                  <h3><a href="listings-single.html">House with Swimming Pool</a></h3>
-                  <address>Don St, Brooklyn, New York</address>
-                  <p class="mb-0">
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-secondary"></span>
-                    <span class="review">(3 Reviews)</span>
-                  </p>
-                </div>
-              </div>
-
-              <div class="d-block d-md-flex listing vertical">
-                <a href="listings-single.html" class="img d-block" style="background-image: url('images/img_3.jpg')"></a>
-                <div class="lh-content">
-                  <span class="category">Furniture</span>
-                  <a href="#" class="bookmark"><span class="icon-heart"></span></a>
-                  <h3><a href="listings-single.html">Wooden Chair &amp; Table</a></h3>
-                  <address>Don St, Brooklyn, New York</address>
-                  <p class="mb-0">
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-secondary"></span>
-                    <span class="review">(3 Reviews)</span>
-                  </p>
-                </div>
-              </div>
-
-              <div class="d-block d-md-flex listing vertical">
-                <a href="listings-single.html" class="img d-block" style="background-image: url('images/img_4.jpg')"></a>
-                <div class="lh-content">
-                  <span class="category">Electronics</span>
-                  <a href="#" class="bookmark"><span class="icon-heart"></span></a>
-                  <h3><a href="listings-single.html">iPhone X gray</a></h3>
-                  <address>Don St, Brooklyn, New York</address>
-                  <p class="mb-0">
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-warning"></span>
-                    <span class="icon-star text-secondary"></span>
-                    <span class="review">(3 Reviews)</span>
-                  </p>
-                </div>
-              </div>
-
+              {% endfor %}
             </div>
           </div>
         </div>
@@ -357,8 +205,6 @@
                 <h2 class="footer-heading mb-4">Navigations</h2>
                 <ul class="list-unstyled">
                   <li><a href="#">About Us</a></li>
-                  <li><a href="#">Services</a></li>
-                  <li><a href="#">Testimonials</a></li>
                   <li><a href="#">Contact Us</a></li>
                 </ul>
               </div>
@@ -370,16 +216,6 @@
                 <a href="#" class="pl-3 pr-3"><span class="icon-linkedin"></span></a>
               </div>
             </div>
-          </div>
-          <div class="col-md-3">
-            <form action="#" method="post">
-              <div class="input-group mb-3">
-                <input type="text" class="form-control border-secondary text-white bg-transparent" placeholder="Search products..." aria-label="Enter Email" aria-describedby="button-addon2">
-                <div class="input-group-append">
-                  <button class="btn btn-primary text-white" type="button" id="button-addon2">Search</button>
-                </div>
-              </div>
-            </form>
           </div>
         </div>
         <div class="row pt-5 mt-5 text-center">
@@ -393,6 +229,8 @@
             </div>
           </div>
         </div>
+        </div>
+      </div>
       </div>
     </footer>
   </div>

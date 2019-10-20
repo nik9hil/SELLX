@@ -2,11 +2,12 @@
 from flask import Flask, render_template, redirect, url_for, flash
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Email, Length, DataRequired 
+from wtforms import StringField, BooleanField, PasswordField, SubmitField, FileField
+from wtforms.validators import InputRequired, Email, Length, DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import os.path
+from os import urandom
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from sqlalchemy import desc
 
@@ -27,20 +28,25 @@ login_manager.login_view = 'login'
 #Defining the tables
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))
     username = db.Column(db.String(15), unique=True)
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(80))
+    posts = db.relationship('NewPost', backref='author',lazy=True)
     def __repr__(self):
         return f"User('{self.id}','{self.username}','{self.email}')"
 
 class NewPost(UserMixin,db.Model):
     id = db.Column(db.Integer,primary_key = True)
-    username = db.Column(db.String(15))
-    caption = db.Column(db.String(1000))
-    message = db.Column(db.String(100))
+    description = db.Column(db.String(1000))
+    tag = db.Column(db.String(30))
+    sub_tag = db.Column(db.String(40))
+    price = db.Column(db.Integer) 
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    img = db.Column(db.String(200), nullable = False)
+    loc = db.Column(db.String(20))
     def __repr__(self):
-        return f"NewPost('{self.id}','{self.caption}','{self.message}')"
-
+        return f"NewPost('{self.id}','{self.tag}','{self.sub_tag}','{self.description}','{self.price},'{self.user_id},'{self.img}','{self.loc}')"
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -53,20 +59,42 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
+    name = StringField('name', validators=[InputRequired()])
     username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
     password = PasswordField('password', validators=[InputRequired(), Length(min=6, max=80)])
     re_password = PasswordField('re_password', validators=[InputRequired(), Length(min=6,max=80)])
     submit = SubmitField('Sign Up')
 	
 class NewPostForm(FlaskForm):
-    Caption = StringField('Caption', validators=[InputRequired()])
-    message = StringField('Message', validators=[InputRequired()], render_kw = {'rows':7})
+    tag = StringField('Tag', validators=[InputRequired()])
+    sub_tag = StringField('SubTag', validators=[InputRequired()])
+    description = StringField('Description', validators=[InputRequired()])
+    price = StringField('Price', validators=[InputRequired()])
+    img = FileField('Image')
+    loc = StringField('Location', validators=[InputRequired()])
+    submit = SubmitField('Post!')
 
 
-#Login
+@app.route('/', methods=['GET','POST'])
+def star():
+    fur = NewPost.query.filter(NewPost.tag=='Furniture').count()
+    car = NewPost.query.filter(NewPost.tag=='Car').count()
+    ele = NewPost.query.filter(NewPost.tag=='Electronics').count()
+    books = NewPost.query.filter(NewPost.tag=='Books & Magazine').count()
+    other = NewPost.query.filter(NewPost.tag=='Other').count()
+    watch = NewPost.query.filter(NewPost.tag=='Watch').count()
+    return render_template('index.html',title="Index",Post_data = NewPost.query.all(), fcnt=fur, carcnt=car, elcnt = ele, bcnt= books, ocnt = other, wcnt= watch)
+
 @app.route('/index/', methods=['GET','POST'])
+@login_required
 def index():
-    return render_template('index.html',title="Index")
+    fur = NewPost.query.filter(NewPost.tag=='Furniture').count()
+    car = NewPost.query.filter(NewPost.tag=='Car').count()
+    ele = NewPost.query.filter(NewPost.tag=='Electronics').count()
+    books = NewPost.query.filter(NewPost.tag=='Books & Magazine').count()
+    other = NewPost.query.filter(NewPost.tag=='Other').count()
+    watch = NewPost.query.filter(NewPost.tag=='Watch').count()
+    return render_template('index.html',title="Index",Post_data = NewPost.query.all(), fcnt=fur, carcnt=car, elcnt = ele, bcnt= books, ocnt = other, wcnt= watch)
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -77,7 +105,6 @@ def login():
             if check_password_hash(user.password,form.password.data):
                 #return redirect(url_for('welcome'))
                 login_user(user, remember=form.remember.data)
-
                 return redirect(url_for('index'))
     return render_template('login.html',title="Log In",form = form)
 
@@ -93,12 +120,55 @@ def signup():
             if User.query.filter_by(username=form.username.data).first() == form.username.data:
                 flash("Username already exits!")
         # else:
-            new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+            new_user = User(username=form.username.data, email=form.email.data, password=hashed_password,name = form.name.data)
             db.session.add(new_user)
             db.session.commit()
 
             return redirect(url_for('index'))
     return render_template('register.html',title="Sign Up", form=form)
+
+
+def save_picture(form_picture):
+    random_hex = urandom(8).hex()
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static\media', picture_fn)
+    form_picture.save(picture_path)
+
+    return picture_path
+
+#newPost
+@app.route("/new/",methods = ['GET','POST'])
+@login_required
+def new():
+    form = NewPostForm()
+    if form.validate_on_submit():
+        print(form.tag.data)
+        user = current_user.id
+        descrp = form.description.data
+        tagl = form.tag.data
+        stag = form.sub_tag.data
+        amt = form.price.data
+        lo = form.loc.data
+        image = save_picture(form.img.data)
+        print(image)
+        new_post = NewPost(description=descrp, tag=tagl,sub_tag=stag, price=amt, user_id=user, img=image,loc = lo)
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect(url_for('index'))
+    return render_template("posting.html",form=form,title="New Post")
+
+#Profiles Page
+@app.route("/profile")
+@login_required
+def getProfile():
+    return render_template("profile.html",title="Profile")
+
+@app.route("/singlelist/")
+@login_required
+def singlelist():
+    return render_template("listings-single.html",title="Feed")#,Post_data = NewPost.query.filter(NewPost.id==postid))
+
 
 #LogOut
 @app.route('/logout')
@@ -106,67 +176,5 @@ def signup():
 def logout():
 	logout_user()
 	return redirect(url_for('login'))
-
-@app.route("/")
-@app.route('/welcome')
-@login_required
-def welcome():
-    return render_template('hello.html')
-
-
-#Feeds
-@app.route("/feeds")
-@login_required
-def getFeeds():
-    options = [
-    {"name":"Log out","selected":False,"link":url_for("logout")},
-    {"name":"Feed","selected":True,"link":url_for("getFeeds")},
-    {"name":"My Profile","selected":False,"link":url_for("getProfile")},
-    #{"name":"My Network","selected":False,"link":url_for("getFriends")},
-    {"name":"New Post","selected":False,"link":url_for("newPost")}
-    ]
-
-    return render_template("feed.html",title="Feed", nav_options = options ,Post_data = NewPost.query.order_by(desc(NewPost.id)).all())
-
-
-#Profiles Page
-@app.route("/profile")
-@login_required
-def getProfile():
-    options = [
-    {"name":"Log out","selected":False,"link":url_for("logout")},
-    {"name":"Feed","selected":False,"link":url_for("getFeeds")},
-    {"name":"My Profile","selected":True,"link":url_for("getProfile")},
-    #{"name":"My Network","selected":False,"link":url_for("getFriends")},
-    {"name":"New Post","selected":False,"link":url_for("newPost")}
-    ]
-    return render_template("profile.html",title="Profile",nav_options= options)
-
-
-#newPost
-@app.route("/post/new/",methods = ['GET','POST'])
-@login_required
-def newPost():
-    options = [
-    {"name":"Log out","selected":False,"link":url_for("logout")},
-    {"name":"Feed","selected":False,"link":url_for("getFeeds")},
-    {"name":"My Profile","selected":False,"link":url_for("getProfile")},
-    #{"name":"My Network","selected":False,"link":url_for("getFriends")},
-    {"name":"New Post","selected":True,"link":url_for("newPost")}
-    ]
-    form = NewPostForm()
-    if form.validate_on_submit():
-        user = current_user.username
-        caption = form.Caption.data
-        message = form.message.data
-
-        new_post = NewPost(username=user, caption=caption, message=message)
-        db.session.add(new_post)
-        db.session.commit()
-        return redirect(url_for('getFeeds'))
-    return render_template("newpost.html",form=form,title="New Post",nav_options= options)
-
-
-
 if __name__=='__main__':
 	app.run(debug=True)

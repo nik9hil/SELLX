@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>SELLX &mdash; Buy and Sell Anything</title>
+    <title>ClassyAds &mdash; Colorlib Website Template</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -44,12 +44,13 @@
         <div class="row align-items-center">
           
           <div class="col-6 col-xl-2">
-            <h1 class="mb-0 site-logo"><a href="{{url_for('index')}}" class="text-black mb-0">SELLX<span class="text-primary">X</span>  </a></h1>
+            <h1 class="mb-0 site-logo"><a href="index.html" class="text-black mb-0">SELL<span class="text-primary">X</span>  </a></h1>
           </div>
           <div class="col-12 col-md-10 d-none d-xl-block">
             <nav class="site-navigation position-relative text-right" role="navigation">
 
               <ul class="site-menu js-clone-nav mr-auto d-none d-lg-block">
+                  <li><a href="{{url_for('index')}}">Home</a></li>
                 <li class="active"><a href="listings.html">Ads</a></li>
                 <!--<li class="has-children">-->
                 <li><a href="about.html">About Us</a>
@@ -58,14 +59,11 @@
                   </ul>-->
                 </li>
                 <li><a href="contact.html">Contact</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
 
-                <li class="ml-xl-3 login"><a href="{{ url_for('login') }}"><span class="border-left pl-xl-4"></span>Log In</a></li>
-          
-                <li><a href="{{ url_for('login') }}" class="cta"><span class="bg-primary text-white rounded">+ Post an Ad</span></a></li>
               </ul>
             </nav>
           </div>
-
 
           <div class="d-inline-block d-xl-none ml-auto py-3 col-6 text-right" style="position: relative; top: 3px;">
             <a href="#" class="site-menu-toggle js-menu-toggle text-black"><span class="icon-menu h3"></span></a>
@@ -85,7 +83,7 @@
             
             <div class="row justify-content-center mt-5">
               <div class="col-md-8 text-center">
-                <h1>Register</h1>
+                <h1>Post Your Ad!</h1>
               </div>
             </div>
           </div>
@@ -97,50 +95,52 @@
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-md-7 mb-5"  data-aos="fade">
-            <form class="p-5 bg-white" method="POST" action="">
-            {{ form.hidden_tag() }}
-            <div class="row form-group">
-                
-                <div class="col-md-12">
-                  <label class="text-black" for="subject">Name</label> 
-                  {{ form.name(class='form-control') }}
-                </div>
-              </div>
-           
+            <form class="p-5 bg-white" method="POST" action="" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}           
               <div class="row form-group">
                 
                 <div class="col-md-12">
-                  <label class="text-black" for="email">Email</label> 
-                  {{ form.email(class='form-control') }}
+                  <label class="text-black" for="subject">Tag</label> 
+                  {{ form.tag(class='form-control') }}
+                </div>
+              </div>
+              <div class="row form-group">
+                
+                  <div class="col-md-12">
+                    <label class="text-black" for="subject">Sub Tag</label> 
+                    {{ form.sub_tag(class='form-control') }}
+                  </div>
+                </div>
+  
+
+              <div class="row form-group">
+                <div class="col-md-12">
+                  <label class="text-black" for="subject">Description</label>
+                  {{ form.description(class='form-control') }}
                 </div>
               </div>
 
               <div class="row form-group">
                 <div class="col-md-12">
-                  <label class="text-black" for="subject">Username</label>
-                  {{ form.username(class='form-control') }}
+                  <label class="text-black" for="subject">Price</label> 
+                  {{ form.price(class='form-control') }}
                 </div>
               </div>
+              <div class="row form-group">
+                
+                  <div class="col-md-12">
+                    <label class="text-black" for="subject">Location</label> 
+                    {{ form.loc(class='form-control') }}
+                  </div>
+                </div>
+  
 
               <div class="row form-group">
-                <div class="col-md-12">
-                  <label class="text-black" for="subject">Password</label> 
-                  {{ form.password(class='form-control') }}
+                  <div class="col-md-12">
+                    <label class="text-black" for="subject">Upload Image</label> 
+                    {{ form.img(class='form-control-file') }}
+                  </div>
                 </div>
-              </div>
-
-              <div class="row form-group">
-                <div class="col-md-12">
-                  <label class="text-black" for="subject">Re-type Password</label> 
-                  {{ form.re_password(class='form-control') }}
-                </div>
-              </div>
-
-              <div class="row form-group">
-                <div class="col-12">
-                  <p>Have an account? <a href="{{ url_for('login') }}">Log In</a></p>
-                </div>
-              </div>
 
               <div class="row form-group">
                 <div class="col-md-12">
@@ -184,9 +184,8 @@
           <div class="col-md-12">
             <div class="border-top pt-5">
             <p>
-            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank" >Colorlib</a>
-            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. 
+            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank" >Colorlib</a>-->
             </p>
             </div>
           </div>
