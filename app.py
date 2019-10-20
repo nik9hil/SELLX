@@ -30,6 +30,8 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(15), unique=True)
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(80))
+    def __repr__(self):
+        return f"User('{self.id}','{self.username}','{self.email}')"
 
 class NewPost(UserMixin,db.Model):
     id = db.Column(db.Integer,primary_key = True)
@@ -46,14 +48,14 @@ def load_user(user_id):
 
 class LoginForm(FlaskForm):
     username = StringField('username', validators=[InputRequired(), Length(min=4,max=15)])
-    password = PasswordField('password', validators=[InputRequired(), Length(min=8,max=80)])
+    password = PasswordField('password', validators=[InputRequired(), Length(min=6,max=80)])
     remember = BooleanField('remember me')
 
 class RegisterForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
     username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
-    password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
-    re_password = PasswordField('re_password', validators=[InputRequired(), Length(min=8,max=80)])
+    password = PasswordField('password', validators=[InputRequired(), Length(min=6, max=80)])
+    re_password = PasswordField('re_password', validators=[InputRequired(), Length(min=6,max=80)])
     submit = SubmitField('Sign Up')
 	
 class NewPostForm(FlaskForm):
@@ -76,7 +78,7 @@ def login():
                 #return redirect(url_for('welcome'))
                 login_user(user, remember=form.remember.data)
 
-                return redirect(url_for('getFeeds'))
+                return redirect(url_for('index'))
     return render_template('login.html',title="Log In",form = form)
 
 
@@ -85,18 +87,17 @@ def login():
 def signup():
     form = RegisterForm()
     if form.validate_on_submit():
-        print(form.email.data)
-        '''hashed_password = generate_password_hash(form.password.data, method='sha256')
-        if User.query.filter_by(username=form.username.data).first() == form.username.data:
-            flash("Username already exits!")
+        if form.password.data == form.re_password.data:
+        #print(form.email.data)
+            hashed_password = generate_password_hash(form.password.data, method='sha256')
+            if User.query.filter_by(username=form.username.data).first() == form.username.data:
+                flash("Username already exits!")
         # else:
-        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
+            new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
 
-        #return '<h1>New user has been created!</h1>'
-        #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'''
-        return redirect(url_for('index'))
+            return redirect(url_for('index'))
     return render_template('register.html',title="Sign Up", form=form)
 
 #LogOut

@@ -64,7 +64,6 @@
                 <li><a href="blog.html">Blog</a></li>
                 <li><a href="contact.html">Contact</a></li>
 
-                <li class="ml-xl-3 login active"><a href="login.html"><span class="border-left pl-xl-4"></span>Log In</a></li>
                 <li><a href="{{ url_for('signup') }}">Register</a></li>
 
                 <li><a href="{{ url_for('login') }}" class="cta"><span class="bg-primary text-white rounded">+ Post an Ad</span></a></li>
@@ -107,40 +106,35 @@
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-md-7 mb-5"  data-aos="fade">
-
-
-
-            <form action="#" class="p-5 bg-white" method="POST">
+            <form class="p-5 bg-white" method="POST" action="">
              {{form.hidden_tag()}}
               <div class="row form-group"></div>
                 <div class="col-md-12">
-                  <label class="text-black" for="email">Email</label> 
-                  {{form.email(class='form-control')}}
+                  <label class="text-black" for="email">Username</label> 
+                  {{form.username(class='form-control')}}
                 </div>
-              </div>
 
-              <div class="row form-group">
-                
+              <div class="row form-group"></div>
                 <div class="col-md-12">
                   <label class="text-black" for="subject">Password</label> 
                   {{form.password(class='form-control')}}
                 </div>
-              </div>
 
-              <div class="row form-group">
+              <div class="row form-group"></div>
                 <div class="col-12">
                   <p>No account yet? <a href="{{ url_for('signup') }}">Register</a></p>
-                </div>
-              </div>
 
-            
               <div class="row form-group">
                 <div class="col-md-12">
                   <input type="submit" value="Sign In" class="btn btn-primary py-2 px-4 text-white">
                 </div>
               </div>
-
-  
+            </div>
+          </div>
+        </div>
+        </div>
+              </div></div>
+            </div>
             </form>
           </div>
           
