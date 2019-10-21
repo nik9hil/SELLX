@@ -93,6 +93,7 @@
             <div class="col-lg-8">
   
               <div class="row">
+                <h4>Your Ads</h4><br>
                 {% for data in Post_data %}
                 <div class="col-lg-6">
                   
@@ -100,16 +101,37 @@
                     <a href="url_for('index')" class="img d-block" style="background-image: url('images/img_1.jpg')"></a>
                     <div class="lh-content">
                       <span class="category">{{ data.tag }}</span>
+                      <a href="#" class="category">{{ data.status }}</a>
                       <h3><a href="{{ url_for('index') }}">{{ data.sub_tag }}</a></h3>
                       <address>{{ data.loc }}</address>
                     </div>
-                  </div>
-  
-                </div>
-                {% endfor %}
                 </div>
               </div>
-  
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+              <div class="col-lg-8">
+    
+                <div class="row">
+                  <h4>Your Orders</h4>
+                  {% for dat in Posto_data %}
+                  <div class="col-lg-6">
+                    
+                    <div class="d-block d-md-flex listing vertical">
+                      <a href="url_for('index')" class="img d-block" style="background-image: url('images/img_1.jpg')"></a>
+                      <div class="lh-content">
+                        <span class="category">{{ dat.tag }}</span>
+                        <a href="#" class="category">{{ dat.status }}</a>
+                        <h3><a href="{{ url_for('index') }}">{{ dat.sub_tag }}</a></h3>
+                        <address>{{ dat.loc }}</address>
+                      </div>
+                  </div>
+                </div>
+                  {% endfor %}
+                </div>
+              </div>
             </div>
               <div class="col-lg-3 ml-auto">
 

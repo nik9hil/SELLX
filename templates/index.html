@@ -150,8 +150,8 @@
             </div>
             <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
                 <a href="#" class="popular-category h-100">
-                  <span class="icon"><span class="flaticon-watch"></span></span>
-                  <span class="caption mb-2 d-block">Watches</span>
+                  <span class="icon"><span class="flaticon-clothes"></span></span>
+                  <span class="caption mb-2 d-block">Clothing</span>
                   <span class="number">{{wcnt}}</span>
                 </a>
               </div>
@@ -176,7 +176,7 @@
               
               {% for data in Post_data %}
               <div class="d-block d-md-flex listing vertical">
-                <a href="{{ url_for('singlelist', postid = data.id) }}" class="img d-block" style="background-image: url(image/img1.jpg) "></a>
+                <a href="{{ url_for('singlelist', postid = data.id) }}" class="img d-block" style="background-image: url(images/img1.jpg) "></a>
                 <div class="lh-content">
                   <span class="category">{{data.tag}}</span>
                   <!--<a href="#" class="bookmark"><span class="icon-heart"></span></a>-->

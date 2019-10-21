@@ -1,5 +1,5 @@
 #Importing Dependencies
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, PasswordField, SubmitField, FileField
@@ -33,12 +33,13 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(80))
     posts = db.relationship('NewPost', backref='author',lazy=True)
-    #payments = db.relationship('Payment', backref='author',lazy=True)
+    addr = db.Column(db.String(100))
+    payment = db.relationship('Payment', backref='author',lazy=True)
     def __repr__(self):
         return f"User('{self.id}','{self.username}','{self.email},'{self.posts}')"
     
 
-'''class Payment(UserMixin, db.Model):
+class Payment(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cardno = db.Column(db.String(16))
     expdate = db.Column(db.String(5))
@@ -47,7 +48,7 @@ class User(UserMixin, db.Model):
     price = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     def __repr__(self):
-        return f"User('{self.id}','{self.cardno}','{self.cardowner},'{self.expdate},'{self.pid}'')"'''
+        return f"Payment('{self.id}','{self.cardno}','{self.cardowner},'{self.expdate},'{self.pid}'')"
 
 class NewPost(UserMixin,db.Model):
     id = db.Column(db.Integer,primary_key = True)
@@ -58,6 +59,7 @@ class NewPost(UserMixin,db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     img = db.Column(db.String(200), nullable = False)
     loc = db.Column(db.String(20))
+    status = db.Column(db.String(15))
     def __repr__(self):
         return f"NewPost('{self.id}','{self.tag}','{self.sub_tag}','{self.description}','{self.price},'{self.user_id},'{self.img}','{self.loc}')"
 
@@ -76,10 +78,11 @@ class RegisterForm(FlaskForm):
     username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
     password = PasswordField('password', validators=[InputRequired(), Length(min=6, max=80)])
     re_password = PasswordField('re_password', validators=[InputRequired(), Length(min=6,max=80)])
+    addr = StringField('Address', validators=[InputRequired()])
     submit = SubmitField('Sign Up')
 	
 class NewPostForm(FlaskForm):
-    tag = StringField('Tag', validators=[InputRequired()])
+    tag = StringField('Tag')
     sub_tag = StringField('SubTag', validators=[InputRequired()])
     description = StringField('Description', validators=[InputRequired()])
     price = StringField('Price', validators=[InputRequired()])
@@ -91,16 +94,13 @@ class PaymentForm(FlaskForm):
     cardno = StringField('Card Number', validators=[InputRequired()])
     expdate = StringField('Expiry Date', validators=[InputRequired()])
     cvcode = StringField('CV Code', validators=[InputRequired()])
-    cardown = StringField('StringField', validators=[InputRequired()])
+    cardowner = StringField('Card Number')
     submit = SubmitField('Process Payment')
 
 class SearchForm(FlaskForm):
     search = StringField('Search Tag')    
     submit = SubmitField('Search')
     #loc = StringField('Location')
-
-class OrderForm(FlaskForm):   
-    submit = SubmitField('Order Now!')
 
 @app.route('/', methods=['GET','POST'])
 def star():
@@ -117,19 +117,19 @@ def star():
 @login_required
 def index():
     form = SearchForm()
-    fur = NewPost.query.filter(NewPost.tag=='Furniture').count()
-    car = NewPost.query.filter(NewPost.tag=='Car').count()
-    ele = NewPost.query.filter(NewPost.tag=='Electronics').count()
-    books = NewPost.query.filter(NewPost.tag=='Books & Magazine').count()
-    other = NewPost.query.filter(NewPost.tag=='Other').count()
-    watch = NewPost.query.filter(NewPost.tag=='Watch').count()
+    fur = NewPost.query.filter((NewPost.tag=='Furniture') & (NewPost.status=='Available')).count()
+    car = NewPost.query.filter((NewPost.tag=='Cars & Vehicle') & (NewPost.status=='Available')).count()
+    ele = NewPost.query.filter((NewPost.tag=='Electronics') & (NewPost.status=='Available')).count()
+    books = NewPost.query.filter((NewPost.tag=='Books & Magazines')& (NewPost.status=='Available')).count()
+    other = NewPost.query.filter((NewPost.tag=='Other')& (NewPost.status=='Available')).count()
+    watch = NewPost.query.filter((NewPost.tag=='Clothing')& (NewPost.status=='Available')).count()
     """t = NewPost.query.all()
     for i in t:
         print(i.img)"""
     if form.validate_on_submit():
         return redirect(url_for('listing'), data=form.search.data)
     
-    q = NewPost.query.filter(NewPost.user_id!=current_user.id)
+    q = NewPost.query.filter((NewPost.user_id!=current_user.id) & (NewPost.status=='Available'))
     return render_template('index.html',title="Index",Post_data = q, form=form,fcnt=fur, carcnt=car, elcnt = ele, bcnt= books, ocnt = other, wcnt= watch)
 
 @app.route('/login/', methods=['GET', 'POST'])
@@ -177,6 +177,7 @@ def save_picture(form_picture):
     return picture_path
 
 #newPost
+menu = ['Book & Magazine','Furniture', 'Electronics', 'Cars & Vehicle', 'Clothing', 'Other']
 @app.route("/new/",methods = ['GET','POST'])
 @login_required
 def new():
@@ -185,39 +186,40 @@ def new():
         #print(form.tag.data)
         user = current_user.id
         descrp = form.description.data
-        tagl = form.tag.data
+        tagl = request.form.get('agent1', None)
+        print(tagl)
         stag = form.sub_tag.data
         amt = form.price.data
         lo = form.loc.data
+        sta = 'Available'
         image = save_picture(form.img.data)
         #print(image)
-        new_post = NewPost(description=descrp, tag=tagl,sub_tag=stag, price=amt, user_id=user, img=image,loc = lo)
+        new_post = NewPost(description=descrp, tag=tagl,sub_tag=stag, price=amt, user_id=user, img=image,loc = lo, status = sta)
         db.session.add(new_post)
         db.session.commit()
         return redirect(url_for('index'))
-    return render_template("posting.html",form=form,title="New Post")
+    return render_template("posting.html",form=form,title="New Post", menu=menu)
 
 #Profiles Page
 @app.route("/profile",methods = ['GET','POST'])
 @login_required
 def profile():
-    return render_template("profile.html",title="Profile", Post_data=current_user.posts)
+    return render_template("profile.html",title="Profile", Post_data=current_user.posts, Posto_data=Payment.query.filter(Payment.user_id==current_user.id))
 
 @app.route("/payment/<pid>",methods = ['GET','POST'])
 @login_required
 def payment(pid):
     form = PaymentForm()
     if form.validate_on_submit():
-        print(form.cardno.data)
         cardn = form.cardno.data
         expd = form.expdate.data
-        cardo = form.cardown.data
+        cardo = form.cardowner.data
         post = NewPost.query.filter(NewPost.id ==pid)
         post = post.first()
         q = post.price
-        order = Payment(cardn = cardn, expdate=expd, cardown = cardo, user_id=current_user.id, pid = pid, price=q)
+        order = Payment(cardno = cardn, expdate=expd, cardowner = cardo, user_id=current_user.id, pid = pid, price=q)
+        post.status = 'Sold'
         db.session.add(order)
-        db.session.delete(post)
         db.session.commit()
         return redirect(url_for('index'))
     return render_template("payment.html",title="Payment", form=form, pid=pid)
