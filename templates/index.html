@@ -44,14 +44,14 @@
         <div class="row align-items-center">
           
           <div class="col-6 col-xl-2">
-            <h1 class="mb-0 site-logo"><a href="#" class="text-black mb-0">SELL<span class="text-primary">X</span>  </a></h1>
+            <h1 class="mb-0 site-logo"><a href="{{ url_for('index') }}" class="text-black mb-0">SELL<span class="text-primary">X</span>  </a></h1>
           </div>
           <div class="col-12 col-md-10 d-none d-xl-block">
             <nav class="site-navigation position-relative text-right" role="navigation">
 
               <ul class="site-menu js-clone-nav mr-auto d-none d-lg-block">
-                <li class="active"><a href="index.html">Home</a></li>
-                <li><a href="listings.html">Ads</a></li>
+                <li><a href="{{ url_for('profile') }}">Home</a></li>
+                <li><a href="#">Ads</a></li>
                 <li class="has-children">
                   <a href="about.html">About</a>
                   <ul class="dropdown">
@@ -100,10 +100,10 @@
               <form method="post">
                 <div class="row align-items-center">
                   <div class="col-lg-12 mb-4 mb-xl-0 col-xl-4">
-                    <input type="text" class="form-control rounded" placeholder="What are you looking for?">
+                      {{ form.search(class='form-control', placeholder="What are you looking for?")}}
                   </div>
                   <div class="col-lg-12 col-xl-2 ml-auto text-right">
-                    <input type="submit" class="btn btn-primary btn-block rounded" value="Search">
+                      {{ form.submit(class="btn btn-primary py-2 px-4 text-white") }}
                   </div>
                   
                 </div>
@@ -176,12 +176,12 @@
               
               {% for data in Post_data %}
               <div class="d-block d-md-flex listing vertical">
-                <a href="{{ url_for('singlelist') }}" class="img d-block" style="background-image: {{ url_for(data.img) }}"></a>
+                <a href="{{ url_for('singlelist', postid = data.id) }}" class="img d-block" style="background-image: url(image/img1.jpg) "></a>
                 <div class="lh-content">
                   <span class="category">{{data.tag}}</span>
                   <!--<a href="#" class="bookmark"><span class="icon-heart"></span></a>-->
-                  <h3><a href="{{url_for('singlelist')}}">{{data.description}}</a></h3>
-                  <!--<address>Don St, Brooklyn, New York</address>-->
+                  <h3><a href="{{url_for('singlelist', postid = data.id)}}">{{data.sub_tag}}</a></h3>
+                  <address>{{data.loc}}</address>
                 </div>
               </div>
               {% endfor %}

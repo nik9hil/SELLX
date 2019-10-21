@@ -44,14 +44,14 @@
           <div class="row align-items-center">
             
             <div class="col-6 col-xl-2">
-              <h1 class="mb-0 site-logo"><a href="{{url_for('index')}}" class="text-black mb-0">SELL<span class="text-primary">X</span>  </a></h1>
+              <h1 class="mb-0 site-logo"><a href="#" class="text-black mb-0">SELL<span class="text-primary">X</span>  </a></h1>
             </div>
             <div class="col-12 col-md-10 d-none d-xl-block">
               <nav class="site-navigation position-relative text-right" role="navigation">
   
                 <ul class="site-menu js-clone-nav mr-auto d-none d-lg-block">
-                  <li><a href="{{url_for('profile')}}">Home</a></li>
-                  <li class="active"><a href="{{url_for('index')}}">Ads</a></li>
+                  <li class="active"><a href="index.html">Home</a></li>
+                  <li><a href="listings.html">Ads</a></li>
                   <li class="has-children">
                     <a href="about.html">About</a>
                     <ul class="dropdown">
@@ -91,7 +91,7 @@
             
             <div class="row justify-content-center mt-5">
               <div class="col-md-8 text-center">
-                <h1>{{ Post_data.sub_tag }}</h1>
+                <h1>{{ Post_data.sub_tag}}</h1>
                 <p class="mb-0">{{ Post_data.loc }}</p>
               </div>
             </div>
@@ -114,30 +114,26 @@
               <div><img src="images/img_1.jpg" alt="Image" class="img-fluid"></div>
             </div>
             <h4 class="h5 mb-4 text-black">Description</h4>
-            <p>{{ Post_data.description }}</p>
+            <p>{{Post_data.description}}</p>
             <h4 class="h5 mb-4 text-black">Price</h4>
-            <p>{{ Post_data.price }}</p>
+            <p>{{Post_data.price}}</p>
           </div>
           <div class="col-lg-3 ml-auto">
 
             <div class="mb-5">
-              <h3 class="#">Search</h3>
+              <h3 class="h5 text-black mb-3">Search</h3>
               <form action="#" method="post">
                 <div class="form-group">
-                    {{ form.search(class='form-control', placeholder="What are you looking for?")}}
+                  <input type="text" placeholder="What are you looking for?" class="form-control">
                 </div>
-                <div class="col-md-20">
-                    {{ form.submit(class="btn btn-primary py-2 px-4 text-white") }}
-                </div>
-              </form>
-              <form action="{{ url_for('payment', pid = Post_data.id) }}" method="post" >
-                <div class="form-group" action="{{ url_for('payment', pid = Post_data.id) }}">
+                <div class="form-group">
                     <div class="col-md-12">
                         <input type="submit" value="Order Now!" class="btn btn-primary py-2 px-4 text-white">
                       </div>               
                   </div>
                 </div>
               </form>
+            
               <h3 class="h6 mb-3">More Info</h3>
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti voluptatem placeat facilis, reprehenderit eius officiis.</p>
             </div>

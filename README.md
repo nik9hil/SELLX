@@ -1,3 +1,0 @@
-# SELLX
-
-Classified Website
