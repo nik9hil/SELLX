@@ -62,9 +62,12 @@
                     </ul>
                   </li>
                   <li><a href="contact.html">Contact</a></li>
-  
+                  {% if current_user.is_authenticated %}
                   <li><a href="{{ url_for('logout') }}">Logout</a></li>
-  
+                  {% else %}
+                  <li><a href="{{ url_for('login') }}">Login</a></li>
+                  <li><a href="{{ url_for('signup') }}">Register</a></li>
+                  {% endif %}
                   <li><a href="{{ url_for('new') }}" class="cta"><span class="bg-primary text-white rounded">+ Post an Ad</span></a></li>
                 </ul>
               </nav>
@@ -115,21 +118,46 @@
             </div>
             <h4 class="h5 mb-4 text-black">Description</h4>
             <p>{{ Post_data.description }}</p>
+            <div class="collapse" id="collapseExample">
+            <form action="{{ url_for('singlelist', postid = Post_data.id) }}" method="post" >
+            {{ eform.hidden_tag() }}
+            <p>{{eform.description(class='form-control', placeholder="Enter new description")}}</p>
+      
+            </div>  
             <h4 class="h5 mb-4 text-black">Price</h4>
             <p>{{ Post_data.price }}</p>
+            <div class="collapse" id="collapseExample">
+    
+            <p>{{eform.price(class='form-control', placeholder="Enter new price")}}</p>
+                <div class="col-md-12">
+                    {{ eform.submit(class="btn btn-primary py-2 px-4 text-white") }}
+                  </div>
+              </form>
+              </div>
           </div>
           <div class="col-lg-3 ml-auto">
 
             <div class="mb-5">
-              <h3 class="#">Search</h3>
+              <h3 class="h5 text-black mb-3">Search</h3>
               <form action="#" method="post">
-                <div class="form-group">
-                    {{ form.search(class='form-control', placeholder="What are you looking for?")}}
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control border-secondary text-black bg-transparent" placeholder="Search Products..." class="form-control">
+                  <div class="input-group-append">
+                    <button class="btn btn-primary text-white" type="button" id="button-addon2">Search</button>
+                  </div>
                 </div>
-                <div class="col-md-20">
-                    {{ form.submit(class="btn btn-primary py-2 px-4 text-white") }}
                 </div>
               </form>
+              {% if Post_data.status=='Available' %}
+              {% if Post_data.user_id==current_user.id %}
+              <form action="" method="post" >
+                <div class="form-group" action="">
+                    <div class="col-md-12">
+                        <input value="Edit" class="btn btn-primary py-2 px-4 text-white" data-toggle="collapse" data-target="#collapseExample" aria-controls="collapseExample">
+                      </div>               
+                  </div>
+              </form>
+              {% endif %}
               <form action="{{ url_for('payment', pid = Post_data.id) }}" method="post" >
                 <div class="form-group" action="{{ url_for('payment', pid = Post_data.id) }}">
                     <div class="col-md-12">
@@ -138,8 +166,7 @@
                   </div>
                 </div>
               </form>
-              <h3 class="h6 mb-3">More Info</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti voluptatem placeat facilis, reprehenderit eius officiis.</p>
+              {% endif %}
             </div>
           </div>
         </div>
@@ -172,16 +199,6 @@
                 <a href="#" class="pl-3 pr-3"><span class="icon-linkedin"></span></a>
               </div>
             </div>
-          </div>
-          <div class="col-md-3">
-            <form action="#" method="post">
-              <div class="input-group mb-3">
-                <input type="text" class="form-control border-secondary text-white bg-transparent" placeholder="Search products..." aria-label="Enter Email" aria-describedby="button-addon2">
-                <div class="input-group-append">
-                  <button class="btn btn-primary text-white" type="button" id="button-addon2">Search</button>
-                </div>
-              </div>
-            </form>
           </div>
         </div>
         <div class="row pt-5 mt-5 text-center">

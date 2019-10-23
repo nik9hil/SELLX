@@ -96,7 +96,7 @@
         <div class="row">
           <div class="col-lg-8">
             <div class="row">
-              {{% for data in Post_data %}}
+              {% for data in Post_data %}
               <div class="col-lg-6">                
                 <div class="d-block d-md-flex listing vertical">
                   <a href="{{url_for('singlelist, postid = data.id')}}" class="img d-block" style="background-image: url('images/img_1.jpg')"></a>
@@ -107,7 +107,7 @@
                   </div>
                 </div>
               </div>
-              {{% endfor %}}
+              {% endfor %}
               </div>
             </div>
 

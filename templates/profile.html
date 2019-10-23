@@ -79,7 +79,7 @@
             <div class="row justify-content-center mt-5">
               <div class="col-md-8 text-center">
                 <h1>Profile</h1>
-                <p class="mb-0">Happy Selling</p>
+                <p class="mb-0">{{ use }}</p>
               </div>
             </div>
           </div>
@@ -92,17 +92,21 @@
           <div class="row">
             <div class="col-lg-8">
   
-              <div class="row">
-                <h4>Your Ads</h4><br>
+                  <div class="row">
+                      <div class="col-12">
+                        <h2 class="h5 mb-4 text-black">Your Ads</h2>
+                      </div>
+                    </div>
+                    <div class="row">
                 {% for data in Post_data %}
                 <div class="col-lg-6">
                   
                   <div class="d-block d-md-flex listing vertical">
-                    <a href="url_for('index')" class="img d-block" style="background-image: url('images/img_1.jpg')"></a>
+                    <a href="{{ url_for('singlelist', postid=data.id) }}" class="img d-block" style="background-image: url('images/img_1.jpg')"></a>
                     <div class="lh-content">
                       <span class="category">{{ data.tag }}</span>
                       <a href="#" class="category">{{ data.status }}</a>
-                      <h3><a href="{{ url_for('index') }}">{{ data.sub_tag }}</a></h3>
+                      <h3><a href="{{ url_for('singlelist', postid=data.id) }}">{{ data.sub_tag }}</a></h3>
                       <address>{{ data.loc }}</address>
                     </div>
                 </div>
@@ -114,18 +118,21 @@
           <div class="row">
               <div class="col-lg-8">
     
+                  <div class="row">
+                      <div class="col-12">
+                        <h2 class="h5 mb-4 text-black">Your Orders</h2>
+                      </div>
+                    </div>
                 <div class="row">
-                  <h4>Your Orders</h4>
-                  {% for dat in Posto_data %}
+                  {% for data in Posto_data %}
                   <div class="col-lg-6">
                     
                     <div class="d-block d-md-flex listing vertical">
-                      <a href="url_for('index')" class="img d-block" style="background-image: url('images/img_1.jpg')"></a>
+                      <a href="{{ url_for('singlelist', postid=data.id) }}" class="img d-block" style="background-image: url('images/img_1.jpg')"></a>
                       <div class="lh-content">
-                        <span class="category">{{ dat.tag }}</span>
-                        <a href="#" class="category">{{ dat.status }}</a>
-                        <h3><a href="{{ url_for('index') }}">{{ dat.sub_tag }}</a></h3>
-                        <address>{{ dat.loc }}</address>
+                        <span class="category">{{ data.tag }}</span>
+                        <h3><a href="{{ url_for('singlelist', postid=data.id) }}">{{ data.sub_tag }}</a></h3>
+                        <address>{{ data.loc }}</address>
                       </div>
                   </div>
                 </div>
@@ -133,17 +140,19 @@
                 </div>
               </div>
             </div>
-              <div class="col-lg-3 ml-auto">
-
+              <div class="col-lg-3 ml-auto"> 
               <div class="mb-5">
                 <h3 class="h5 text-black mb-3">Search</h3>
                 <form action="#" method="post">
-                  <div class="form-group">
-                    <input type="text" placeholder="What are you looking for?" class="form-control">
+                  <div class="input-group mb-3">
+                    <input type="text" class="form-control border-secondary text-black bg-transparent" placeholder="Search Products..." class="form-control">
+                    <div class="input-group-append">
+                      <button class="btn btn-primary text-white" type="button" id="button-addon2">Search</button>
+                    </div>
                   </div>
                   </div>
                 </form>
-              
+    
                 <h3 class="h6 mb-3">More Info</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti voluptatem placeat facilis, reprehenderit eius officiis.</p>
               </div>

@@ -82,7 +82,7 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Sign Up')
 	
 class NewPostForm(FlaskForm):
-    tag = StringField('Tag')
+    tag = StringField('Tag', validators=[InputRequired()])
     sub_tag = StringField('SubTag', validators=[InputRequired()])
     description = StringField('Description', validators=[InputRequired()])
     price = StringField('Price', validators=[InputRequired()])
@@ -98,23 +98,16 @@ class PaymentForm(FlaskForm):
     submit = SubmitField('Process Payment')
 
 class SearchForm(FlaskForm):
-    search = StringField('Search Tag')    
+    search = StringField('search',validators=[InputRequired()])    
     submit = SubmitField('Search')
-    #loc = StringField('Location')
+
+class AlterForm(FlaskForm):
+    description = StringField('Description')
+    price = StringField('Price')
+    submit = SubmitField('Save')
+
 
 @app.route('/', methods=['GET','POST'])
-def star():
-    fur = NewPost.query.filter(NewPost.tag=='Furniture').count()
-    car = NewPost.query.filter(NewPost.tag=='Car').count()
-    ele = NewPost.query.filter(NewPost.tag=='Electronics').count()
-    books = NewPost.query.filter(NewPost.tag=='Books & Magazine').count()
-    other = NewPost.query.filter(NewPost.tag=='Other').count()
-    watch = NewPost.query.filter(NewPost.tag=='Watch').count()
-
-    return render_template('index.html',title="Index",Post_data = NewPost.query.all(), fcnt=fur, carcnt=car, elcnt = ele, bcnt= books, ocnt = other, wcnt= watch)
-
-@app.route('/index/', methods=['GET','POST'])
-@login_required
 def index():
     form = SearchForm()
     fur = NewPost.query.filter((NewPost.tag=='Furniture') & (NewPost.status=='Available')).count()
@@ -123,14 +116,16 @@ def index():
     books = NewPost.query.filter((NewPost.tag=='Books & Magazines')& (NewPost.status=='Available')).count()
     other = NewPost.query.filter((NewPost.tag=='Other')& (NewPost.status=='Available')).count()
     watch = NewPost.query.filter((NewPost.tag=='Clothing')& (NewPost.status=='Available')).count()
-    """t = NewPost.query.all()
-    for i in t:
-        print(i.img)"""
+
     if form.validate_on_submit():
-        return redirect(url_for('listing'), data=form.search.data)
-    
-    q = NewPost.query.filter((NewPost.user_id!=current_user.id) & (NewPost.status=='Available'))
-    return render_template('index.html',title="Index",Post_data = q, form=form,fcnt=fur, carcnt=car, elcnt = ele, bcnt= books, ocnt = other, wcnt= watch)
+        return redirect(url_for('listing', data=form.search.data)) 
+    q=0
+    if current_user.is_authenticated:
+        q = NewPost.query.filter((NewPost.user_id!=current_user.id) & (NewPost.status=='Available'))
+    else:
+        q =NewPost.query.filter(NewPost.status=='Available')
+    return render_template('index.html',title="Index",form=form,Post_data = q,fcnt=fur, carcnt=car, elcnt = ele, bcnt= books, ocnt = other, wcnt= watch)
+
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -191,6 +186,7 @@ def new():
         stag = form.sub_tag.data
         amt = form.price.data
         lo = form.loc.data
+        print(lo)
         sta = 'Available'
         image = save_picture(form.img.data)
         #print(image)
@@ -204,7 +200,12 @@ def new():
 @app.route("/profile",methods = ['GET','POST'])
 @login_required
 def profile():
-    return render_template("profile.html",title="Profile", Post_data=current_user.posts, Posto_data=Payment.query.filter(Payment.user_id==current_user.id))
+    pay = Payment.query.filter(Payment.user_id==current_user.id)
+    pa = []
+    for p in pay:
+        tmp = NewPost.query.filter(NewPost.id==p.pid)
+        pa.append(tmp.first())
+    return render_template("profile.html",title="Profile", use=current_user.username,Post_data=current_user.posts, Posto_data=pa)
 
 @app.route("/payment/<pid>",methods = ['GET','POST'])
 @login_required
@@ -225,27 +226,36 @@ def payment(pid):
     return render_template("payment.html",title="Payment", form=form, pid=pid)
 
 @app.route("/listing/<data>",methods = ['GET','POST'])
-@login_required
 def listing(data):
     #print(postid)
     form = SearchForm()
     if form.validate_on_submit():
-        data = form.search.data
-        return redirect(url_for('listing'), data=data)
-    return render_template("listings.html",title="Items",form=form, Post_data = NewPost.query.all())
+        dat = form.search.data
+        return redirect(url_for('listing', data=dat))
+
+    #print(NewPost.query.all())
+    return render_template("listings.html",title="Items",form=form, Post_data = NewPost.query.filter(NewPost.tag==data))
 
 
 @app.route("/singlelist/<postid>",methods = ['GET','POST'])
-@login_required
+
 def singlelist(postid):
     #print(postid)
     form = SearchForm()
     qry = NewPost.query.filter(NewPost.id==postid)
     q = qry.first()
+    eform = AlterForm()
     if form.validate_on_submit():
         data = form.search.data
-        return redirect(url_for('listing'), data=data)
-    return render_template("listings-single.html",title="item",Post_data = q,form=form)
+        return redirect(url_for('listing', data=data))
+    if eform.validate_on_submit():
+        print(eform.description.data)
+        if eform.description.data:
+            q.description = eform.description.data
+        if eform.price.data:
+            q.price = eform.price.data
+        db.session.commit()
+    return render_template("listings-single.html",title="item",Post_data = q,form=form, eform=eform)
 
 
 #LogOut
