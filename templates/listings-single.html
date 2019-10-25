@@ -85,7 +85,7 @@
   
   
     
-    <div class="site-blocks-cover inner-page-cover overlay" style="background-image: url(images/hero_1.jpg);" data-aos="fade" data-stellar-background-ratio="0.5">
+    <div class="site-blocks-cover inner-page-cover overlay" style="background-image: url('https://www.bing.com/images/blob?bcid=SwAt8Sfs74UAug');" data-aos="fade" data-stellar-background-ratio="0.5">
       <div class="container">
         <div class="row align-items-center justify-content-center text-center">
 
@@ -127,11 +127,16 @@
             <h4 class="h5 mb-4 text-black">Price</h4>
             <p>{{ Post_data.price }}</p>
             <div class="collapse" id="collapseExample">
-    
+     
             <p>{{eform.price(class='form-control', placeholder="Enter new price")}}</p>
                 <div class="col-md-12">
                     {{ eform.submit(class="btn btn-primary py-2 px-4 text-white") }}
                   </div>
+                
+                  {{ dform.hidden_tag() }}
+                        <div class="col-md-12">
+                          {{ dform.submit(class="btn btn-primary py-2 px-4 text-white") }}
+                        </div>          
               </form>
               </div>
           </div>
@@ -148,8 +153,8 @@
                 </div>
                 </div>
               </form>
-              {% if Post_data.status=='Available' %}
               {% if Post_data.user_id==current_user.id %}
+              {% if Post_data.status=='Available' %}
               <form action="" method="post" >
                 <div class="form-group" action="">
                     <div class="col-md-12">
@@ -158,6 +163,8 @@
                   </div>
               </form>
               {% endif %}
+              {% endif %}
+              {% if Post_data.status=='Available' %}
               <form action="{{ url_for('payment', pid = Post_data.id) }}" method="post" >
                 <div class="form-group" action="{{ url_for('payment', pid = Post_data.id) }}">
                     <div class="col-md-12">

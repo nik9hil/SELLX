@@ -106,6 +106,8 @@ class AlterForm(FlaskForm):
     price = StringField('Price')
     submit = SubmitField('Save')
 
+class DeleteForm(FlaskForm):
+    submit = SubmitField('Delete')
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -182,11 +184,9 @@ def new():
         user = current_user.id
         descrp = form.description.data
         tagl = request.form.get('agent1', None)
-        print(tagl)
         stag = form.sub_tag.data
         amt = form.price.data
         lo = form.loc.data
-        print(lo)
         sta = 'Available'
         image = save_picture(form.img.data)
         #print(image)
@@ -245,17 +245,22 @@ def singlelist(postid):
     qry = NewPost.query.filter(NewPost.id==postid)
     q = qry.first()
     eform = AlterForm()
+    dform = DeleteForm()
     if form.validate_on_submit():
         data = form.search.data
         return redirect(url_for('listing', data=data))
     if eform.validate_on_submit():
-        print(eform.description.data)
+        #print(eform.description.data)
         if eform.description.data:
             q.description = eform.description.data
         if eform.price.data:
             q.price = eform.price.data
         db.session.commit()
-    return render_template("listings-single.html",title="item",Post_data = q,form=form, eform=eform)
+    if dform.validate_on_submit():
+        db.session.delete(q)
+        db.session.commit()
+        return redirect(url_for('profile'))
+    return render_template("listings-single.html",title="item",Post_data = q,form=form, eform=eform,dform=dform)
 
 
 #LogOut
