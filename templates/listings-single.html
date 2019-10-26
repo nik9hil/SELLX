@@ -121,22 +121,22 @@
             <div class="collapse" id="collapseExample">
             <form action="{{ url_for('singlelist', postid = Post_data.id) }}" method="post" >
             {{ eform.hidden_tag() }}
-            <p>{{eform.description(class='form-control', placeholder="Enter new description")}}</p>
+            <p>{{ eform.description(class='form-control', placeholder="Enter new description") }}</p>
       
             </div>  
             <h4 class="h5 mb-4 text-black">Price</h4>
             <p>{{ Post_data.price }}</p>
             <div class="collapse" id="collapseExample">
      
-            <p>{{eform.price(class='form-control', placeholder="Enter new price")}}</p>
+            <p>{{ eform.price(class='form-control', placeholder="Enter new price") }}</p>
                 <div class="col-md-12">
                     {{ eform.submit(class="btn btn-primary py-2 px-4 text-white") }}
                   </div>
                 
-                  {{ dform.hidden_tag() }}
-                        <div class="col-md-12">
-                          {{ dform.submit(class="btn btn-primary py-2 px-4 text-white") }}
-                        </div>          
+                {{ dform.hidden_tag() }}
+                  <div class="col-md-12">
+                    {{ dform.submit(class="btn btn-primary py-2 px-4 text-white") }}
+                  </div>          
               </form>
               </div>
           </div>

@@ -91,19 +91,19 @@
                 <p data-aos="fade-up" data-aos-delay="100">You can buy, sell anything you want.</p>
               </div>
             </div>
-
-            <div class="form-search-wrap" data-aos="fade-up" data-aos-delay="200">
-              <form method="POST" action='#'>
-                {{ form.hidden_tag() }}
-                <div class="row align-items-center">
-                  <div class="col-lg-12 mb-4 mb-xl-0 col-xl-4">
-                      {{ form.search(class='form-control', placeholder="What are you looking for?") }}
-                  </div>
-                  <div class="col-lg-12 col-xl-2 ml-auto text-right">
-                      {{ form.submit(class="btn btn-primary py-2 px-4 text-white") }}
-                  </div>
+            <div class="row justify-content-center mb-4">
+            <div class="form-search-wrap" data-aos="fade-up" data-aos-delay="100">
+                {{ form.hidden_tag() }}  
+              <form method="POST">
+                      <div class="input-group mb-3">
+                        {{ form.search(class='form-control', placeholder='Search Products...') }}
+                        <div class="input-group-append">
+                          {{ form.submit(class='btn btn-primary text-white') }}
+                        </div>
+                      </div>
+                      </div>
+                    </form>
                 </div>
-              </form>
             </div>
           </div>
         </div>
@@ -116,46 +116,57 @@
         <div class="overlap-category mb-5">
           <div class="row align-items-stretch no-gutters">
             <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
-              <a href="#" class="popular-category h-100">
+              <a href="" class="popular-category h-100">
+                <form method="POST" action="{{ url_for('listi', postid = 0) }}">
                 <span class="icon"><span class="flaticon-books"></span></span>
                 <span class="caption mb-2 d-block">Books &amp; Magazines</span>
                 <span class="number">{{bcnt}}</span>
+                </form>
               </a>
             </div>
             <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
-              <a href="#" class="popular-category h-100">
-
+              <a href="" class="popular-category h-100">
+                <form method="POST" action="{{ url_for('listi', postid = 1) }}">
                 <span class="icon"><span class="flaticon-bunk-bed"></span></span>
                 <span class="caption mb-2 d-block">Furniture</span>
                 <span class="number">{{fcnt}}</span>
+                </form>
               </a>
             </div>
             <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
-              <a href="#" class="popular-category h-100">
+              <a href="" class="popular-category h-100">
+                  <form method="POST" action="{{ url_for('listi', postid = 2) }}">
                 <span class="icon"><span class="flaticon-innovation"></span></span>
                 <span class="caption mb-2 d-block">Electronics</span>
                 <span class="number">{{elcnt}}</span>
+                </form>
               </a>
             </div>
             <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
-              <a href="#" class="popular-category h-100">
+              <a href="" class="popular-category h-100">
+                  <form method="POST" action="{{ url_for('listi', postid = 3) }}">
                 <span class="icon"><span class="flaticon-car"></span></span>
                 <span class="caption mb-2 d-block">Cars &amp; Vehicles</span>
                 <span class="number">{{carcnt}}</span>
+                </form>
               </a>
             </div>
             <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
-                <a href="#" class="popular-category h-100">
+                <a href="" class="popular-category h-100">
+                    <form method="POST" action="{{ url_for('listi', postid = 4) }}">
                   <span class="icon"><span class="flaticon-clothes"></span></span>
                   <span class="caption mb-2 d-block">Clothing</span>
                   <span class="number">{{wcnt}}</span>
+                  </form>
                 </a>
               </div>
             <div class="col-sm-6 col-md-4 mb-4 mb-lg-0 col-lg-2">
-              <a href="#" class="popular-category h-100">
+              <a href="" class="popular-category h-100">
+                  <form method="POST" action="{{ url_for('listi', postid = 5) }}">
                 <span class="icon"><span class="flaticon-pizza"></span></span>
                 <span class="caption mb-2 d-block">Other</span>
                 <span class="number">{{ocnt}}</span>
+                </form>
               </a>
             </div>
           </div>
@@ -176,7 +187,7 @@
                 <div class="lh-content">
                   <span class="category">{{data.tag}}</span>
                   <!--<a href="#" class="bookmark"><span class="icon-heart"></span></a>-->
-                  <h3><a href="{{url_for('singlelist', postid = data.id)}}">{{data.sub_tag}}</a></h3>
+                  <h3><a href="{{ url_for('singlelist', postid = data.id)}} ">{{data.sub_tag}}</a></h3>
                   <address>{{data.loc}}</address>
                 </div>
               </div>

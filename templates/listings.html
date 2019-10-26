@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>ClassyAds &mdash; Colorlib Website Template</title>
+        <title>SELLX &mdash; Buy & Sell Anything!</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
@@ -51,7 +51,7 @@
 
               <ul class="site-menu js-clone-nav mr-auto d-none d-lg-block">
                 <li><a href="{{url_for('profile')}}">Home</a></li>
-                <li class="active"><a href="{{url_for('listing')}}">Ads</a></li>
+                <li class="active"><a href="#">Ads</a></li>
                 <!--<li class="has-children">-->
                 <li><a href="about.html">About Us</a>
                   <!--<ul class="dropdown">
@@ -78,8 +78,6 @@
         <div class="row align-items-center justify-content-center text-center">
 
           <div class="col-md-10" data-aos="fade-up" data-aos-delay="400">
-            
-            
             <div class="row justify-content-center mt-5">
               <div class="col-md-8 text-center">
                 <h1>Ads Listings</h1>
@@ -99,23 +97,22 @@
               {% for data in Post_data %}
               <div class="col-lg-6">                
                 <div class="d-block d-md-flex listing vertical">
-                  <a href="{{url_for('singlelist, postid = data.id')}}" class="img d-block" style="background-image: url('images/img_1.jpg')"></a>
+                  <a href=" {{ url_for('singlelist', postid = data.id) }} " class="img d-block" style="background-image: url('images/img_1.jpg')"></a>
                   <div class="lh-content">
                     <span class="category">{{ data.tag }}</span>
-                    <h3><a href="{{url_for('singlelist, postid = data.id')}}">{{ data.sub_tag }}</a></h3>
+                    <h3><a href=" {{url_for('singlelist', postid = data.id) }} ">{{ data.sub_tag }}</a></h3>
                     <address>{{ data.loc }}</address>
                   </div>
                 </div>
-              </div>
               {% endfor %}
               </div>
             </div>
-
           </div>
           <div class="col-lg-3 ml-auto">
             <div class="mb-5">
               <h3 class="h5 text-black mb-3">Search</h3>
               <form action="#" method="post">
+                  {{ form.hidden_tag() }}
                 <div class="form-group">
                     {{ form.search(class='form-control', placeholder="What are you looking for?")}}
                 </div>
@@ -124,7 +121,6 @@
                   <div class="wrap-icon">
                     <span class="icon icon-room"></span>
                     {{ form.submit(class="btn btn-primary py-2 px-4 text-white") }}
-                    <!--{{ form.loc(class='form-control', placeholder="Location")}}-->
                   </div>
                 </div>
               </form>

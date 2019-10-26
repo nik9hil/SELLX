@@ -24,6 +24,9 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+menu = ['Book & Magazine','Furniture', 'Electronics', 'Cars & Vehicle', 'Clothing', 'Other']
+menu_dict = {'Book & Magazine':'0','Furniture':'1', 'Electronics':'2', 'Cars & Vehicle':'3', 'Clothing':'4', 'Other':'5'}
+find = ''
 
 #Defining the tables
 class User(UserMixin, db.Model):
@@ -118,15 +121,18 @@ def index():
     books = NewPost.query.filter((NewPost.tag=='Books & Magazines')& (NewPost.status=='Available')).count()
     other = NewPost.query.filter((NewPost.tag=='Other')& (NewPost.status=='Available')).count()
     watch = NewPost.query.filter((NewPost.tag=='Clothing')& (NewPost.status=='Available')).count()
-
-    if form.validate_on_submit():
-        return redirect(url_for('listing', data=form.search.data)) 
     q=0
+    
+    if request.method=="POST":
+        #print(form.search.data)
+        data = form.search.data
+        return redirect(url_for('listi', postid = menu_dict[data]))
+
     if current_user.is_authenticated:
         q = NewPost.query.filter((NewPost.user_id!=current_user.id) & (NewPost.status=='Available'))
     else:
         q =NewPost.query.filter(NewPost.status=='Available')
-    return render_template('index.html',title="Index",form=form,Post_data = q,fcnt=fur, carcnt=car, elcnt = ele, bcnt= books, ocnt = other, wcnt= watch)
+    return render_template('index.html',title="Index", form=form,Post_data = q,fcnt=fur, carcnt=car, elcnt = ele, bcnt= books, ocnt = other, wcnt= watch)
 
 
 @app.route('/login/', methods=['GET', 'POST'])
@@ -174,7 +180,7 @@ def save_picture(form_picture):
     return picture_path
 
 #newPost
-menu = ['Book & Magazine','Furniture', 'Electronics', 'Cars & Vehicle', 'Clothing', 'Other']
+
 @app.route("/new/",methods = ['GET','POST'])
 @login_required
 def new():
@@ -225,20 +231,15 @@ def payment(pid):
         return redirect(url_for('index'))
     return render_template("payment.html",title="Payment", form=form, pid=pid)
 
-@app.route("/listing/<data>",methods = ['GET','POST'])
-def listing(data):
+@app.route("/listi/<postid>",methods = ['GET','POST'])
+def listi(postid):
     #print(postid)
     form = SearchForm()
-    if form.validate_on_submit():
-        dat = form.search.data
-        return redirect(url_for('listing', data=dat))
-
-    #print(NewPost.query.all())
-    return render_template("listings.html",title="Items",form=form, Post_data = NewPost.query.filter(NewPost.tag==data))
+    qry = NewPost.query.filter(NewPost.tag == menu[int(postid)])
+    return render_template("listings.html",title="item",Post_data = qry,form=form)
 
 
 @app.route("/singlelist/<postid>",methods = ['GET','POST'])
-
 def singlelist(postid):
     #print(postid)
     form = SearchForm()
@@ -248,9 +249,8 @@ def singlelist(postid):
     dform = DeleteForm()
     if form.validate_on_submit():
         data = form.search.data
-        return redirect(url_for('listing', data=data))
+        return redirect(url_for('listi', postid=menu_dict[data]))
     if eform.validate_on_submit():
-        #print(eform.description.data)
         if eform.description.data:
             q.description = eform.description.data
         if eform.price.data:

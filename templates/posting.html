@@ -51,7 +51,7 @@
 
               <ul class="site-menu js-clone-nav mr-auto d-none d-lg-block">
                   <li><a href="{{url_for('profile')}}">Home</a></li>
-                <li class="active"><a href="{{url_for('listing', data = 0)}}">Ads</a></li>
+                <li class="active"><a href="{{url_for('listing')}}">Ads</a></li>
                 <!--<li class="has-children">-->
                 <li><a href="about.html">About Us</a>
                   <!--<ul class="dropdown">
@@ -98,7 +98,6 @@
             <form class="p-5 bg-white" method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}           
               <div class="row form-group">
-                
                 <div class="col-md-12">
                   <label class="text-black" for="subject">Tag</label> 
                   <div class="form-group">
