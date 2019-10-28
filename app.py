@@ -3,13 +3,13 @@ from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, PasswordField, SubmitField, FileField
-from wtforms.validators import InputRequired, Email, Length, DataRequired
+from wtforms.validators import InputRequired, Email, Length, DataRequired, EqualTo, ValidationError
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import os.path
 from os import urandom
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 
 
 app = Flask(__name__)
@@ -25,8 +25,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 menu = ['Book & Magazine','Furniture', 'Electronics', 'Cars & Vehicle', 'Clothing', 'Other']
-menu_dict = {'Book & Magazine':'0','Furniture':'1', 'Electronics':'2', 'Cars & Vehicle':'3', 'Clothing':'4', 'Other':'5'}
-find = ''
+#menu_dict = {'Book & Magazine':'0','Furniture':'1', 'Electronics':'2', 'Cars & Vehicle':'3', 'Clothing':'4', 'Other':'5'}
 
 #Defining the tables
 class User(UserMixin, db.Model):
@@ -39,7 +38,7 @@ class User(UserMixin, db.Model):
     addr = db.Column(db.String(100))
     payment = db.relationship('Payment', backref='author',lazy=True)
     def __repr__(self):
-        return f"User('{self.id}','{self.username}','{self.email},'{self.posts}')"
+        return f"User('{self.id}','{self.username}','{self.email},'{self.posts}','{self.payment}')"
     
 
 class Payment(UserMixin, db.Model):
@@ -71,32 +70,48 @@ def load_user(user_id):
 	return User.query.get(int(user_id))
 
 class LoginForm(FlaskForm):
-    username = StringField('username', validators=[InputRequired(), Length(min=4,max=15)])
-    password = PasswordField('password', validators=[InputRequired(), Length(min=6,max=80)])
+    username = StringField('username', validators=[InputRequired()])
+    password = PasswordField('password', validators=[InputRequired()])
     remember = BooleanField('remember me')
+    
+    def validate_username(self,username):
+        user = User.query.filter(User.username==username.data).first()
+        if user is None:
+            raise ValidationError('No such Username present')
 
 class RegisterForm(FlaskForm):
-    email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
-    name = StringField('name', validators=[InputRequired()])
-    username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
-    password = PasswordField('password', validators=[InputRequired(), Length(min=6, max=80)])
-    re_password = PasswordField('re_password', validators=[InputRequired(), Length(min=6,max=80)])
+    email = StringField('email', validators=[Email(message='Invalid email'), Length(max=50)])
+    name = StringField('name', validators=[DataRequired('Please enter your name')])
+    username = StringField('username', validators=[InputRequired(), Length(min=4, max=15,message='Minimum length of 4')])
+    password = PasswordField('password', validators=[DataRequired(message='Please enter a password'), Length(min=6, message='Minimum password length is 6!')])
+    re_password = PasswordField('re_password', validators=[EqualTo('password',message='Password must match')])
     addr = StringField('Address', validators=[InputRequired()])
     submit = SubmitField('Sign Up')
+
+    def validate_email(self,email):
+        user = User.query.filter(User.email==email.data).first()
+        if user is not None:
+            raise ValidationError('Use different email address')
+
+    def validate_username(self,username):
+        user = User.query.filter(User.username==username.data).first()
+        if user is not None:
+            raise ValidationError('Use different Username')
+
 	
 class NewPostForm(FlaskForm):
     tag = StringField('Tag', validators=[InputRequired()])
-    sub_tag = StringField('SubTag', validators=[InputRequired()])
-    description = StringField('Description', validators=[InputRequired()])
-    price = StringField('Price', validators=[InputRequired()])
-    img = FileField('Image')
-    loc = StringField('Location', validators=[InputRequired()])
+    sub_tag = StringField('SubTag', validators=[InputRequired(message='Enter an apt sub tag')])
+    description = StringField('Description', validators=[InputRequired(message='Enter an apt description')])
+    price = StringField('Price', validators=[InputRequired(message='Enter an apt price')])
+    img = FileField('Image', validators=[DataRequired(message='Image is required')])
+    loc = StringField('Location', validators=[InputRequired(message='Enter the city of the product')])
     submit = SubmitField('Post!')
 
 class PaymentForm(FlaskForm):
     cardno = StringField('Card Number', validators=[InputRequired()])
     expdate = StringField('Expiry Date', validators=[InputRequired()])
-    cvcode = StringField('CV Code', validators=[InputRequired()])
+    cvcode = PasswordField('CV Code', validators=[InputRequired()])
     cardowner = StringField('Card Number')
     submit = SubmitField('Process Payment')
 
@@ -118,21 +133,24 @@ def index():
     fur = NewPost.query.filter((NewPost.tag=='Furniture') & (NewPost.status=='Available')).count()
     car = NewPost.query.filter((NewPost.tag=='Cars & Vehicle') & (NewPost.status=='Available')).count()
     ele = NewPost.query.filter((NewPost.tag=='Electronics') & (NewPost.status=='Available')).count()
-    books = NewPost.query.filter((NewPost.tag=='Books & Magazines')& (NewPost.status=='Available')).count()
+    books = NewPost.query.filter((NewPost.tag=='Book & Magazine')& (NewPost.status=='Available')).count()
     other = NewPost.query.filter((NewPost.tag=='Other')& (NewPost.status=='Available')).count()
     watch = NewPost.query.filter((NewPost.tag=='Clothing')& (NewPost.status=='Available')).count()
     q=0
     
-    if request.method=="POST":
-        #print(form.search.data)
-        data = form.search.data
-        return redirect(url_for('listi', postid = menu_dict[data]))
-
     if current_user.is_authenticated:
         q = NewPost.query.filter((NewPost.user_id!=current_user.id) & (NewPost.status=='Available'))
     else:
-        q =NewPost.query.filter(NewPost.status=='Available')
-    return render_template('index.html',title="Index", form=form,Post_data = q,fcnt=fur, carcnt=car, elcnt = ele, bcnt= books, ocnt = other, wcnt= watch)
+        q = NewPost.query.filter(NewPost.status=='Available')
+    for data in q:
+        print(data.img)
+
+    if request.method=="POST":
+        data = form.search.data
+        data = data.lower()
+        return redirect(url_for('listi', postid = data))
+    print(os.getcwd())
+    return render_template('index.html',title="Index", form=form,Post_data = q,fcnt=fur, carcnt=car, elcnt = ele, bcnt= books, ocnt = other, wcnt= watch,menu=menu)
 
 
 @app.route('/login/', methods=['GET', 'POST'])
@@ -172,10 +190,10 @@ def save_picture(form_picture):
     random_hex = urandom(8).hex()
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
-    picture_path = os.path.join(app.root_path,'static\media', picture_fn)
-    form_picture.save(picture_path)
-    print(picture_path)
-    print(picture_fn)
+    picture_p = os.path.join(app.root_path,'static', picture_fn)
+    picture_path = os.path.join(picture_fn)
+    
+    form_picture.save(picture_p)
 
     return picture_path
 
@@ -185,17 +203,17 @@ def save_picture(form_picture):
 @login_required
 def new():
     form = NewPostForm()
-    if form.validate_on_submit():
-        #print(form.tag.data)
+    if request.method=="POST":
         user = current_user.id
         descrp = form.description.data
         tagl = request.form.get('agent1', None)
+        print(tagl)
         stag = form.sub_tag.data
         amt = form.price.data
         lo = form.loc.data
         sta = 'Available'
         image = save_picture(form.img.data)
-        #print(image)
+        print(image)
         new_post = NewPost(description=descrp, tag=tagl,sub_tag=stag, price=amt, user_id=user, img=image,loc = lo, status = sta)
         db.session.add(new_post)
         db.session.commit()
@@ -208,10 +226,16 @@ def new():
 def profile():
     pay = Payment.query.filter(Payment.user_id==current_user.id)
     pa = []
+    form = SearchForm()
     for p in pay:
         tmp = NewPost.query.filter(NewPost.id==p.pid)
         pa.append(tmp.first())
-    return render_template("profile.html",title="Profile", use=current_user.username,Post_data=current_user.posts, Posto_data=pa)
+    if form.validate_on_submit():
+        data = form.search.data
+        data = data.lower()
+        return redirect(url_for('listi', postid=data))
+    
+    return render_template("profile.html",title="Profile", use=current_user.username,Post_data=current_user.posts, Posto_data=pa,form=form)
 
 @app.route("/payment/<pid>",methods = ['GET','POST'])
 @login_required
@@ -235,8 +259,19 @@ def payment(pid):
 def listi(postid):
     #print(postid)
     form = SearchForm()
-    qry = NewPost.query.filter(NewPost.tag == menu[int(postid)])
-    return render_template("listings.html",title="item",Post_data = qry,form=form)
+    if postid.isnumeric():
+        if postid != '6':
+            qry = NewPost.query.filter((NewPost.tag == menu[int(postid)]))
+        else:
+            qry = NewPost.query.all()
+    else:
+        #find = postid.split(' ')
+        qry = NewPost.query.filter((func.lower(NewPost.sub_tag) == postid))
+    if form.validate_on_submit():
+        data = form.search.data
+        data = data.lower()
+        return redirect(url_for('listi', postid=data))
+    return render_template("listings.html",title="Items",Post_data = qry,form=form)
 
 
 @app.route("/singlelist/<postid>",methods = ['GET','POST'])
@@ -249,7 +284,8 @@ def singlelist(postid):
     dform = DeleteForm()
     if form.validate_on_submit():
         data = form.search.data
-        return redirect(url_for('listi', postid=menu_dict[data]))
+        data = data.lower()
+        return redirect(url_for('listi', postid=data))
     if eform.validate_on_submit():
         if eform.description.data:
             q.description = eform.description.data
@@ -257,10 +293,17 @@ def singlelist(postid):
             q.price = eform.price.data
         db.session.commit()
     if dform.validate_on_submit():
+        del_path = os.path.join(os.getcwd(),'static',q.img)
         db.session.delete(q)
         db.session.commit()
+        os.remove(del_path)
         return redirect(url_for('profile'))
-    return render_template("listings-single.html",title="item",Post_data = q,form=form, eform=eform,dform=dform)
+    return render_template("listings-single.html",title="Item",Post_data = q,form=form, eform=eform,dform=dform)
+
+
+@app.route("/about", methods=['POST',"GET"])
+def about():
+    return render_template("about.html",title="About")
 
 
 #LogOut
