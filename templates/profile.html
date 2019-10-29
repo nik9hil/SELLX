@@ -117,7 +117,7 @@
                   <div class="col-lg-6">
                     
                     <div class="d-block d-md-flex listing vertical">
-                      <a href="{{ url_for('singlelist', postid=data.id) }}" class="img d-block" style="background-image: url({{ url_for('static', filename = data.img) }})""></a>
+                      <a href="{{ url_for('singlelist', postid = data.id) }}" class="img d-block" style="background-image: url({{ url_for('static', filename = data.img) }})""></a>
                       <div class="lh-content">
                         <span class="category">{{ data.tag }}</span>
                         <h3><a href="{{ url_for('singlelist', postid=data.id) }}">{{ data.sub_tag }}</a></h3>

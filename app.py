@@ -286,18 +286,21 @@ def singlelist(postid):
         data = form.search.data
         data = data.lower()
         return redirect(url_for('listi', postid=data))
+
+    if request.form.get('action', None) == 'Delete':
+        del_path = os.path.join(os.getcwd(),'static',q.img)
+        db.session.delete(q)
+        db.session.commit()
+        os.remove(del_path)
+        return redirect(url_for('profile'))
+    
     if eform.validate_on_submit():
         if eform.description.data:
             q.description = eform.description.data
         if eform.price.data:
             q.price = eform.price.data
         db.session.commit()
-    if dform.validate_on_submit():
-        del_path = os.path.join(os.getcwd(),'static',q.img)
-        db.session.delete(q)
-        db.session.commit()
-        os.remove(del_path)
-        return redirect(url_for('profile'))
+
     return render_template("listings-single.html",title="Item",Post_data = q,form=form, eform=eform,dform=dform)
 
 
